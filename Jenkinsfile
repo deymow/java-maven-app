@@ -1,48 +1,41 @@
-def gv
 pipeline {
-    agent any    
-    parameters {
-        string(name: 'VERSION', defaultValue: '', description: 'version to deploy on prod')
-        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
-        booleanParam(name: 'executeTests', defaultValue: true, description: '')
+    agent any
+    tools {
+        maven 'maven-3.9'
     }
+
     stages {
-        stage("init"){
-            steps {
-                script {
-                    gv = load "script.groovy"
-                }   
-            }
-        }
-        stage("build"){
-            steps {
-                script {
-                    gv.buildApp()
+        stage("build jar"){
+            steps{
+                scripts{
+                    echo "building the application..."
+                    sh 'mvn package'
                 }
             }
         }
-        stage("test"){
-            when {
-                expression {
-                    params.executeTests == true
-                    params.executeTests
-                }
-            }
-            steps {
-                script {
-                    gv.testApp()
-                }
-            }
-        }
-        stage("deploy"){
-            steps {
-                script {
-                    env.ENV = input message: "Select the environment to deploy to", ok: "Done", parameters: [choice(name: 'ONE', choices: ['dev', 'staging', 'pod'], description: '')]
-                    gv.deployApp()
-                    echo "Deploying to ${ENV}"
+
+        stage("build image"){
+            steps{
+                scripts{
+                    echo "building the application image..."                   
                     
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+                        sh 'docker build -t deymow/demo-app:jma3.0 .'
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh 'docker push deymow/demo-app:jma-3.0'
+
+                    }
                 }
             }
         }
-  }
+
+        stage("deploy") {
+            steps {
+                scripts {
+                    echo "deploying the application..."
+                }
+            }
+        }
+    }
+
 }
