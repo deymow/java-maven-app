@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage("build jar"){
             steps{
-                scripts{
+                script {
                     echo "building the application..."
                     sh 'mvn package'
                 }
@@ -14,7 +14,7 @@ pipeline {
         }
         stage("build image"){
             steps{
-                scripts{
+                script {
                     echo "building the application image..."                   
                     
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]){
@@ -28,7 +28,7 @@ pipeline {
         }
         stage("deploy") {
             steps {
-                scripts {
+                script {
                     echo "deploying the application..."
                 }
             }
