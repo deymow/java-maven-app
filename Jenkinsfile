@@ -3,7 +3,6 @@ pipeline {
     tools {
         maven 'maven-3.9'
     }
-
     stages {
         stage("build jar"){
             steps{
@@ -13,7 +12,6 @@ pipeline {
                 }
             }
         }
-
         stage("build image"){
             steps{
                 scripts{
@@ -28,7 +26,6 @@ pipeline {
                 }
             }
         }
-
         stage("deploy") {
             steps {
                 scripts {
