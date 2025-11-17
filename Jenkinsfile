@@ -18,9 +18,9 @@ pipeline {
                     echo "building the application image..."                   
                     
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]){
-                        sh 'docker build -t deymow/demo-app:jma-1.1.7 .'
+                        sh 'docker build -t deymow/demo-app:jma-2.0 .'
                         sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh 'docker push deymow/demo-app:jma-1.1.7'
+                        sh 'docker push deymow/demo-app:jma-2.0'
 
                     }
                 }
